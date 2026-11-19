@@ -27,9 +27,8 @@ LABEL maintainer="Jan Wagner <waja@cyconet.org>" \
     org.label-schema.vcs-branch="${VCS_BRANCH:-unknown}" \
     org.opencontainers.image.source="https://github.com/waja/docker-calcardbackup"
 
-COPY ["run.sh", "/"]
+COPY ["run.sh", "/opt/calcardbackup/run.sh"]
 COPY ["lib/calcardbackup-options.bashlib", "/opt/calcardbackup/lib/calcardbackup-options.bashlib"]
-RUN ln -s "${MARIADB_CLIENT_CNF:-$CONFIG_DIR/mariadb-client.cnf}" "/etc/my.cnf.d/mariadb-client.cnf"
 
 # hadolint ignore=DL3017,DL3018
 RUN apk --no-cache update && apk --no-cache upgrade && \
@@ -37,6 +36,7 @@ RUN apk --no-cache update && apk --no-cache upgrade && \
   apk --no-cache add --virtual build-dependencies ca-certificates tar curl jq && \
   # Create directory
   mkdir -p /opt/calcardbackup
+
 WORKDIR /opt/calcardbackup
 # Download latest release
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
@@ -49,6 +49,9 @@ RUN curl -L "https://codeberg.org/BernieO/calcardbackup/archive/v$CALCARDBACKUP_
   # Create backup dir and make our start script executable
   mkdir /backup
 
-VOLUME ["/backup"]
+RUN mkdir -p "${CONFIG_DIR:-${DATA_DIR:-/opt/calcardbackup}/config}" /etc/my.cnf.d
+RUN ln -s "${MARIADB_CLIENT_CNF:-${CONFIG_DIR:-${DATA_DIR:-/opt/calcardbackup}/config}/mariadb-client.cnf}" /etc/my.cnf.d/mariadb-client.cnf
 
-CMD ["/run.sh"]
+VOLUME "${DATA_DIR:-/opt/calcardbackup}"
+
+CMD ["/opt/calcardbackup/run.sh"]
