@@ -1,5 +1,6 @@
 #!/bin/bash
 # shellcheck source=lib/calcardbackup-options.bashlib
+
 DATA_DIR="${DATA_DIR:-/opt/calcardbackup}"
 CONFIG_DIR="${CONFIG_DIR:-$DATA_DIR/config}"
 LOG_DIR="${LOG_DIR:-$DATA_DIR/log}"
@@ -45,8 +46,8 @@ case "$BACKUP_LOG" in
 	;;
 esac
 
-if ! mkdir -p "$(dirname "$BACKUP_LOG")" "$(dirname "$CRONTAB_FILE")"; then
-	echo "ERROR: Cannot create log or crontab directory." >&2
+if ! mkdir -p "$(dirname "$BACKUP_LOG")" "$(dirname "$CRONTAB_FILE")" "$BACKUP_DIR"; then
+	echo "ERROR: Cannot create log or crontab or backup directory." >&2
 	exit 1
 fi
 if ! : >>"$BACKUP_LOG"; then

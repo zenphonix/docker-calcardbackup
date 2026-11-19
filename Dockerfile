@@ -46,11 +46,10 @@ RUN curl -L "https://codeberg.org/BernieO/calcardbackup/archive/v$CALCARDBACKUP_
   apk del build-dependencies && \
   # Install needed packages
   apk --no-cache add bash curl findutils mysql-client postgresql-client sqlite gzip zip gnupg supercronic && \
-  # Create backup dir and make our start script executable
-  mkdir /backup
-
-RUN mkdir -p "${CONFIG_DIR:-${DATA_DIR:-/opt/calcardbackup}/config}" /etc/my.cnf.d
-RUN ln -s "${MARIADB_CLIENT_CNF:-${CONFIG_DIR:-${DATA_DIR:-/opt/calcardbackup}/config}/mariadb-client.cnf}" /etc/my.cnf.d/mariadb-client.cnf
+  # Create mariadb config dir
+  mkdir -p /etc/my.cnf.d && \
+  # Create symlink to where we will store the client config in run.sh
+  ln -s "${MARIADB_CLIENT_CNF:-${CONFIG_DIR:-${DATA_DIR:-/opt/calcardbackup}/config}/mariadb-client.cnf}" /etc/my.cnf.d/mariadb-client.cnf
 
 VOLUME "${DATA_DIR:-/opt/calcardbackup}"
 
