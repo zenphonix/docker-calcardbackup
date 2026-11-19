@@ -29,6 +29,7 @@ LABEL maintainer="Jan Wagner <waja@cyconet.org>" \
 
 COPY ["run.sh", "/"]
 COPY ["lib/calcardbackup-options.bashlib", "/opt/calcardbackup/lib/calcardbackup-options.bashlib"]
+RUN ln -s "${MARIADB_CLIENT_CNF:-$CONFIG_DIR/mariadb-client.cnf}" "/etc/my.cnf.d/mariadb-client.cnf"
 
 # hadolint ignore=DL3017,DL3018
 RUN apk --no-cache update && apk --no-cache upgrade && \
